@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdDict.RavenDb.Store", "OpenIdDict.RavenDb.Store\OpenIdDict.RavenDb.Store.csproj", "{C1444384-4AC8-494E-A8CE-732E8B1CBE82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mcrio.OpenIdDict.RavenDb.Store.Stores.Tests", "Mcrio.OpenIdDict.RavenDb.Store.Stores.Tests\Mcrio.OpenIdDict.RavenDb.Store.Stores.Tests.csproj", "{0D3EB20E-6A26-42C5-9122-AFA85DBC6E46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{C1444384-4AC8-494E-A8CE-732E8B1CBE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1444384-4AC8-494E-A8CE-732E8B1CBE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1444384-4AC8-494E-A8CE-732E8B1CBE82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D3EB20E-6A26-42C5-9122-AFA85DBC6E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D3EB20E-6A26-42C5-9122-AFA85DBC6E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D3EB20E-6A26-42C5-9122-AFA85DBC6E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D3EB20E-6A26-42C5-9122-AFA85DBC6E46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
