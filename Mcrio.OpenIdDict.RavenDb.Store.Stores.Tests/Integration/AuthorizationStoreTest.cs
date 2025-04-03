@@ -12,6 +12,7 @@ using OpenIddict.Abstractions;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Shouldly;
+using Xunit;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores.Tests.Integration;
 
@@ -34,8 +35,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             scopes: ["scope1", "scope2"],
             type: "type",
             status: "status",
-            subject: "subject"
-        );
+            subject: "subject");
 
         OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
 
@@ -64,8 +64,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
         // create another one
         OpenIdDictRavenDbAuthorization authorization2 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid2",
-            creationDate: DateTimeOffset.Now
-        );
+            creationDate: DateTimeOffset.Now);
         await store.CreateAsync(authorization2, CancellationToken.None);
 
         authorization2.Id.ShouldNotBeNull();
@@ -85,8 +84,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
         {
             OpenIdDictRavenDbAuthorization authorization = ModelFactory.CreateAuthorizationInstance(
                 applicationId: "appid",
-                creationDate: DateTimeOffset.Now
-            );
+                creationDate: DateTimeOffset.Now);
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
             await store.CreateAsync(authorization, CancellationToken.None);
 
@@ -126,24 +124,21 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             scopes: ["scope1", "scope2"],
             type: "type",
             status: "status",
-            subject: "subject"
-        );
+            subject: "subject");
         OpenIdDictRavenDbAuthorization authorization2 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: "type",
             status: "status",
-            subject: "subject"
-        );
+            subject: "subject");
         OpenIdDictRavenDbAuthorization authorization3 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid3",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: "type",
             status: "status",
-            subject: "subject3"
-        );
+            subject: "subject3");
 
         {
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
@@ -164,9 +159,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     status: null,
                     type: null,
                     scopes: null,
-                    cancellationToken: CancellationToken.None
-                )
-            );
+                    cancellationToken: CancellationToken.None));
             all.Count.ShouldBe(3);
             all.Select(item => item.Id)
                 .ShouldBe([authorization1.Id, authorization2.Id, authorization3.Id]);
@@ -178,22 +171,18 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     status: null,
                     type: null,
                     scopes: null,
-                    cancellationToken: CancellationToken.None
-                )
-            );
+                    cancellationToken: CancellationToken.None));
             bySubject.Count.ShouldBe(1);
             bySubject.Single().Id.ShouldBe(authorization3.Id);
 
             List<OpenIdDictRavenDbAuthorization> byApplicationId = await FromAsyncEnumerableAsync(
-                store.FindByApplicationIdAsync("appid", CancellationToken.None)
-            );
+                store.FindByApplicationIdAsync("appid", CancellationToken.None));
             byApplicationId.Count.ShouldBe(2);
             byApplicationId.Select(item => item.Id)
                 .ShouldBe([authorization1.Id, authorization2.Id]);
 
             List<OpenIdDictRavenDbAuthorization> bySubjectUsingFindBySubject = await FromAsyncEnumerableAsync(
-                store.FindBySubjectAsync("subject3", CancellationToken.None)
-            );
+                store.FindBySubjectAsync("subject3", CancellationToken.None));
             bySubjectUsingFindBySubject.Count.ShouldBe(1);
             bySubjectUsingFindBySubject.Single().Id.ShouldBe(authorization3.Id);
         }
@@ -212,8 +201,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                 scopes: ["scope1", "scope2"],
                 type: "type",
                 status: "status",
-                subject: "subject"
-            );
+                subject: "subject");
 
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
             await store.CreateAsync(authorization, CancellationToken.None);
@@ -287,8 +275,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                         scopes: auth.Scopes,
                         type: auth.Type,
                         status: auth.Status,
-                        subject: auth.Subject
-                    );
+                        subject: auth.Subject);
 
                     await authStore.CreateAsync(authWithTokens, cancellationToken: CancellationToken.None);
                     Debug.Assert(authWithTokens.Id is not null, "Auth.Id should not be null");
@@ -298,10 +285,8 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                             authWithTokens.ApplicationId!,
                             authWithTokens.Id,
                             DateTimeOffset.Now,
-                            DateTimeOffset.Now.AddDays(10)
-                        ),
-                        CancellationToken.None
-                    );
+                            DateTimeOffset.Now.AddDays(10)),
+                        CancellationToken.None);
 
                     expectedNotToBePruned.Add((authWithTokens.Id, "No pruned as has tokens"));
                 }
@@ -315,8 +300,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
             await store.PruneAsync(
                 threshold: DateTimeOffset.Now.Subtract(TimeSpan.FromDays(expiredAfterDays)),
-                CancellationToken.None
-            );
+                CancellationToken.None);
         }
 
         WaitForIndexing(_documentStore);
@@ -325,16 +309,14 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
         {
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
             List<OpenIdDictRavenDbAuthorization> all = await FromAsyncEnumerableAsync(
-                store.FindAsync(null, null, null, null, null, CancellationToken.None)
-            );
+                store.FindAsync(null, null, null, null, null, CancellationToken.None));
             all.Count.ShouldBe(expectedNotToBePruned.Count);
             foreach ((string authId, string description) in expectedNotToBePruned)
             {
                 if (all.All(item => item.Id != authId))
                 {
                     Assert.Fail(
-                        $"Expected authorization with id {authId} to be present, but it was not. Expectation description: {description}"
-                    );
+                        $"Expected authorization with id {authId} to be present, but it was not. Expectation description: {description}");
                 }
             }
 
@@ -343,8 +325,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                 if (all.Any(item => item.Id == authId))
                 {
                     Assert.Fail(
-                        $"Expected authorization with id {authId} to not be present, but it was. Expectation description: {description}"
-                    );
+                        $"Expected authorization with id {authId} to not be present, but it was. Expectation description: {description}");
                 }
             }
         }
@@ -364,8 +345,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.Permanent,
                     status: OpenIddictConstants.Statuses.Revoked,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune expected: no tokens, expired creation, revoked status"
             );
 
@@ -377,8 +357,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.AdHoc,
                     status: OpenIddictConstants.Statuses.Revoked,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune not expected: still valid creation date"
             );
 
@@ -390,8 +369,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.Permanent,
                     status: OpenIddictConstants.Statuses.Valid,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune not expected: status valid"
             );
 
@@ -403,8 +381,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.Permanent,
                     status: OpenIddictConstants.Statuses.Inactive,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune expected: no tokens, status inactive"
             );
 
@@ -416,8 +393,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.Permanent,
                     status: OpenIddictConstants.Statuses.Redeemed,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune expected: no tokens, status redeemed"
             );
 
@@ -429,8 +405,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.Permanent,
                     status: OpenIddictConstants.Statuses.Rejected,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune expected: no tokens, status rejected"
             );
 
@@ -442,8 +417,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.AdHoc,
                     status: OpenIddictConstants.Statuses.Valid,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune expected: no tokens, type adhoc"
             );
 
@@ -455,8 +429,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.Permanent,
                     status: OpenIddictConstants.Statuses.Valid,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune not expected: type permanent"
             );
 
@@ -468,8 +441,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     scopes: ["scope1", "scope2"],
                     type: OpenIddictConstants.AuthorizationTypes.Permanent,
                     status: OpenIddictConstants.Statuses.Valid,
-                    subject: "subject"
-                ),
+                    subject: "subject"),
                 Description: "Prune no expected: type permanent but has tokens"
             );
         }
@@ -485,32 +457,28 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject"
-        );
+            subject: "subject");
         OpenIdDictRavenDbAuthorization authorization2 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject"
-        );
+            subject: "subject");
         OpenIdDictRavenDbAuthorization authorization3 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid3",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject3"
-        );
+            subject: "subject3");
         OpenIdDictRavenDbAuthorization authorization4 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid3",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.AdHoc,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject3"
-        );
+            subject: "subject3");
 
         {
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
@@ -527,8 +495,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                 null,
                 null,
                 null,
-                CancellationToken.None
-            );
+                CancellationToken.None);
         }
 
         {
@@ -540,9 +507,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     status: OpenIddictConstants.Statuses.Revoked,
                     type: null,
                     scopes: null,
-                    cancellationToken: CancellationToken.None
-                )
-            );
+                    cancellationToken: CancellationToken.None));
             all.Count.ShouldBe(4);
             all.Select(item => item.Id)
                 .ShouldBe([authorization1.Id, authorization2.Id, authorization3.Id, authorization4.Id]);
@@ -561,32 +526,28 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject"
-        );
+            subject: "subject");
         OpenIdDictRavenDbAuthorization authorization2 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject"
-        );
+            subject: "subject");
         OpenIdDictRavenDbAuthorization authorization3 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid3",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject3"
-        );
+            subject: "subject3");
         OpenIdDictRavenDbAuthorization authorization4 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "appid3",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.AdHoc,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject3"
-        );
+            subject: "subject3");
 
         {
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
@@ -603,8 +564,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                 "appid",
                 null,
                 null,
-                CancellationToken.None
-            );
+                CancellationToken.None);
         }
 
         {
@@ -616,9 +576,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     status: OpenIddictConstants.Statuses.Revoked,
                     type: null,
                     scopes: null,
-                    cancellationToken: CancellationToken.None
-                )
-            );
+                    cancellationToken: CancellationToken.None));
             all.Count.ShouldBe(2);
             all.Select(item => item.Id)
                 .ShouldBe([authorization1.Id, authorization2.Id]);
@@ -635,32 +593,28 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject1"
-        );
+            subject: "subject1");
         OpenIdDictRavenDbAuthorization authorization2 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "1",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject1"
-        );
+            subject: "subject1");
         OpenIdDictRavenDbAuthorization authorization3 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "99",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject1"
-        );
+            subject: "subject1");
         OpenIdDictRavenDbAuthorization authorization4 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "99",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.AdHoc,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject3"
-        );
+            subject: "subject3");
 
         {
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
@@ -674,8 +628,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
             await store.RevokeBySubjectAsync(
                 "subject1",
-                CancellationToken.None
-            );
+                CancellationToken.None);
         }
 
         {
@@ -687,9 +640,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     status: OpenIddictConstants.Statuses.Revoked,
                     type: null,
                     scopes: null,
-                    cancellationToken: CancellationToken.None
-                )
-            );
+                    cancellationToken: CancellationToken.None));
             all.Count.ShouldBe(3);
             all.Select(item => item.Id)
                 .ShouldBe([authorization1.Id, authorization2.Id, authorization3.Id]);
@@ -706,32 +657,28 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject"
-        );
+            subject: "subject");
         OpenIdDictRavenDbAuthorization authorization2 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "1",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject"
-        );
+            subject: "subject");
         OpenIdDictRavenDbAuthorization authorization3 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "99",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.Permanent,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject3"
-        );
+            subject: "subject3");
         OpenIdDictRavenDbAuthorization authorization4 = ModelFactory.CreateAuthorizationInstance(
             applicationId: "99",
             creationDate: creationDate,
             scopes: ["scope1", "scope2"],
             type: OpenIddictConstants.AuthorizationTypes.AdHoc,
             status: OpenIddictConstants.Statuses.Valid,
-            subject: "subject3"
-        );
+            subject: "subject3");
 
         {
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
@@ -745,8 +692,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
             await store.RevokeByApplicationIdAsync(
                 "1",
-                CancellationToken.None
-            );
+                CancellationToken.None);
         }
 
         {
@@ -758,9 +704,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                     status: OpenIddictConstants.Statuses.Revoked,
                     type: null,
                     scopes: null,
-                    cancellationToken: CancellationToken.None
-                )
-            );
+                    cancellationToken: CancellationToken.None));
             all.Count.ShouldBe(2);
             all.Select(item => item.Id)
                 .ShouldBe([authorization1.Id, authorization2.Id]);
@@ -780,8 +724,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
                 scopes: ["scope1", "scope2"],
                 type: "type",
                 status: "status",
-                subject: "subject"
-            );
+                subject: "subject");
 
             OpenIdDictRavenDbAuthorizationStore store = CreateAuthorizationStore();
             await store.CreateAsync(authorization, CancellationToken.None);
@@ -828,8 +771,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
 
                 return session;
             },
-            new Mock<ILogger<OpenIdDictRavenDbAuthorizationStore>>().Object
-        );
+            new Mock<ILogger<OpenIdDictRavenDbAuthorizationStore>>().Object);
     }
 
     private OpenIdDictRavenDbTokenStore CreateTokenStore(bool useSessionOptimisticConcurrency = false)
@@ -845,8 +787,7 @@ public sealed class AuthorizationStoreTest : IntegrationTestsBase
 
                 return session;
             },
-            new Mock<ILogger<OpenIdDictRavenDbTokenStore>>().Object
-        );
+            new Mock<ILogger<OpenIdDictRavenDbTokenStore>>().Object);
     }
 
     private async Task<OpenIdDictRavenDbAuthorization?> LoadAuthorizationFromDatabase(string id)

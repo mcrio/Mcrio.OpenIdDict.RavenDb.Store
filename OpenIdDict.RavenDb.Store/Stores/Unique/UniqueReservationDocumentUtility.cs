@@ -222,11 +222,11 @@ public abstract class UniqueReservationDocumentUtility<TReservation>
     }
 
     /// <summary>
-    /// Creates an instance of <see cref="TReservation"/>.
+    /// Creates an instance of <typeparamref name="TReservation"/>.
     /// </summary>
     /// <param name="documentId">Unique reservation document id.</param>
     /// <param name="ownerDocumentId">Owner, reservation document id.</param>
-    /// <returns>Instance of <see cref="TReservation"/>.</returns>
+    /// <returns>Instance of <typeparamref name="TReservation"/>.</returns>
     protected abstract TReservation CreateReservationDocument(
         string documentId,
         string ownerDocumentId

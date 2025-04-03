@@ -11,6 +11,7 @@ using OpenIddict.Abstractions;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Shouldly;
+using Xunit;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores.Tests.Integration;
 
@@ -161,42 +162,42 @@ public sealed class TokenStoreTest : IntegrationTestsBase
 
         await store.CreateAsync(
             ModelFactory.CreateTokenInstance(
-                "appId",
-                "auth1",
-                DateTimeOffset.Now,
-                DateTimeOffset.Now.AddMinutes(60),
-                OpenIddictConstants.TokenTypes.Bearer,
-                OpenIddictConstants.Statuses.Valid,
-                "sub",
-                null
+                applicationId: "appId",
+                authorizationId: "auth1",
+                creationDate: DateTimeOffset.Now,
+                expirationDate: DateTimeOffset.Now.AddMinutes(60),
+                type: OpenIddictConstants.TokenTypes.Bearer,
+                status: OpenIddictConstants.Statuses.Valid,
+                subject: "sub",
+                referenceId: null
             ),
             CancellationToken.None
         );
 
         await store.CreateAsync(
             ModelFactory.CreateTokenInstance(
-                "appId",
-                "auth1",
-                DateTimeOffset.Now,
-                DateTimeOffset.Now.AddMinutes(60),
-                OpenIddictConstants.TokenTypes.Bearer,
-                OpenIddictConstants.Statuses.Valid,
-                "sub",
-                null
+                applicationId: "appId",
+                authorizationId: "auth1",
+                creationDate: DateTimeOffset.Now,
+                expirationDate: DateTimeOffset.Now.AddMinutes(60),
+                type: OpenIddictConstants.TokenTypes.Bearer,
+                status: OpenIddictConstants.Statuses.Valid,
+                subject: "sub",
+                referenceId: null
             ),
             CancellationToken.None
         );
 
         await store.CreateAsync(
             ModelFactory.CreateTokenInstance(
-                "appId",
-                "auth1",
-                DateTimeOffset.Now,
-                DateTimeOffset.Now.AddMinutes(60),
-                OpenIddictConstants.TokenTypes.Bearer,
-                OpenIddictConstants.Statuses.Valid,
-                "sub",
-                null
+                applicationId: "appId",
+                authorizationId: "auth1",
+                creationDate: DateTimeOffset.Now,
+                expirationDate: DateTimeOffset.Now.AddMinutes(60),
+                type: OpenIddictConstants.TokenTypes.Bearer,
+                status: OpenIddictConstants.Statuses.Valid,
+                subject: "sub",
+                referenceId: null
             ),
             CancellationToken.None
         );
@@ -258,14 +259,14 @@ public sealed class TokenStoreTest : IntegrationTestsBase
 
             await CreateTokenStore(true).CreateAsync(
                 ModelFactory.CreateTokenInstance(
-                    "appId",
-                    "auth1",
-                    DateTimeOffset.Now,
-                    DateTimeOffset.Now.AddMinutes(60),
-                    OpenIddictConstants.TokenTypes.Bearer,
-                    OpenIddictConstants.Statuses.Valid,
-                    "sub",
-                    null
+                    applicationId: "appId",
+                    authorizationId: "auth1",
+                    creationDate: DateTimeOffset.Now,
+                    expirationDate: DateTimeOffset.Now.AddMinutes(60),
+                    type: OpenIddictConstants.TokenTypes.Bearer,
+                    status: OpenIddictConstants.Statuses.Valid,
+                    subject: "sub",
+                    referenceId: null
                 ),
                 CancellationToken.None
             );
@@ -284,9 +285,8 @@ public sealed class TokenStoreTest : IntegrationTestsBase
 
         WaitForIndexing(_documentStore);
 
-        // todo creating the token again fails currently as RavenDb does not clean up the atomic guard immediatelly, see https://github.com/ravendb/ravendb/issues/20404
-        /*await CreateAnotherWithReference1();
-        await CreateAnotherWithReference1().ShouldThrowAsync<ConcurrencyException>();*/
+        await CreateAnotherWithReference1();
+        await CreateAnotherWithReference1().ShouldThrowAsync<ConcurrencyException>();
 
         return;
 
@@ -325,14 +325,14 @@ public sealed class TokenStoreTest : IntegrationTestsBase
         );
 
         OpenIdDictRavenDbToken tokenWithoutReference = ModelFactory.CreateTokenInstance(
-            "appId",
-            "auth1",
-            DateTimeOffset.Now,
-            DateTimeOffset.Now.AddMinutes(60),
-            OpenIddictConstants.TokenTypes.Bearer,
-            OpenIddictConstants.Statuses.Valid,
-            "sub",
-            null
+            applicationId: "appId",
+            authorizationId: "auth1",
+            creationDate: DateTimeOffset.Now,
+            expirationDate: DateTimeOffset.Now.AddMinutes(60),
+            type: OpenIddictConstants.TokenTypes.Bearer,
+            status: OpenIddictConstants.Statuses.Valid,
+            subject: "sub",
+            referenceId: null
         );
 
         await CreateTokenStore(true).CreateAsync(

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Raven.Client.Documents;
 using Shouldly;
+using Xunit;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores.Tests.Integration;
 
@@ -40,8 +41,7 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
             session: _documentStore.OpenAsyncSession(),
             uniqueReservationType: UniqueReservationType.ScopeName,
             expectedUniqueValue: scope.Name!,
-            expectedReferenceDocumentId: scope.Id
-        );
+            expectedReferenceDocumentId: scope.Id);
 
         OpenIdDictRavenDbScope? scopeFromDatabase = await LoadScopeFromDatabase(scope.Id);
         scopeFromDatabase.ShouldNotBeNull();
@@ -56,8 +56,7 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
         const string scopeName = "scope-1";
         await CreateScopeInstanceAndStoreToDb(
             CreateScopeStore(),
-            scopeName
-        );
+            scopeName);
 
         await CreateWithExistingScopeName().ShouldThrowAsync<DuplicateException>();
         return;
@@ -66,8 +65,7 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
         {
             await CreateScopeInstanceAndStoreToDb(
                 CreateScopeStore(),
-                scopeName
-            );
+                scopeName);
         }
     }
 
@@ -76,14 +74,12 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
     {
         string scopeId = (await CreateScopeInstanceAndStoreToDb(
             CreateScopeStore(),
-            "scope-1"
-        )).Id!;
+            "scope-1")).Id!;
 
         OpenIdDictRavenDbScopeStore store = CreateScopeStore();
         OpenIdDictRavenDbScope? scope = await store.FindByIdAsync(
             scopeId,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         scope.ShouldNotBeNull();
         scope.Name.ShouldBe("scope-1");
 
@@ -98,14 +94,12 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
             session: _documentStore.OpenAsyncSession(),
             uniqueReservationType: UniqueReservationType.ScopeName,
             expectedUniqueValue: "scope-1-updated",
-            expectedReferenceDocumentId: scopeId
-        );
+            expectedReferenceDocumentId: scopeId);
 
         await AssertReservationDocumentDoesNotExistAsync(
             _documentStore.OpenAsyncSession(),
             UniqueReservationType.ScopeName,
-            "scope-1"
-        );
+            "scope-1");
     }
 
     [Fact]
@@ -113,14 +107,12 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
     {
         string scopeId = (await CreateScopeInstanceAndStoreToDb(
             CreateScopeStore(),
-            "scope-1"
-        )).Id!;
+            "scope-1")).Id!;
 
         OpenIdDictRavenDbScopeStore store = CreateScopeStore();
         OpenIdDictRavenDbScope? scope = await store.FindByIdAsync(
             scopeId,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         scope.ShouldNotBeNull();
         scope.Name.ShouldBe("scope-1");
 
@@ -129,8 +121,7 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
         await AssertReservationDocumentDoesNotExistAsync(
             _documentStore.OpenAsyncSession(),
             UniqueReservationType.ScopeName,
-            "scope-1"
-        );
+            "scope-1");
     }
 
     [Fact]
@@ -138,16 +129,13 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
     {
         string scope1Id = (await CreateScopeInstanceAndStoreToDb(
             CreateScopeStore(),
-            "scope-1"
-        )).Id!;
+            "scope-1")).Id!;
         string scope2Id = (await CreateScopeInstanceAndStoreToDb(
             CreateScopeStore(),
-            "scope-2"
-        )).Id!;
+            "scope-2")).Id!;
         string scope3Id = (await CreateScopeInstanceAndStoreToDb(
             CreateScopeStore(),
-            "scope-3"
-        )).Id!;
+            "scope-3")).Id!;
 
         WaitForIndexing(_documentStore);
 
@@ -159,15 +147,13 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
 
         OpenIdDictRavenDbScope? byNonExistingName = await store.FindByNameAsync(
             Guid.NewGuid().ToString(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
         byNonExistingName.ShouldBeNull();
 
         var byExistingAndNonExistingNames = new List<OpenIdDictRavenDbScope>();
         await foreach (OpenIdDictRavenDbScope scope in store.FindByNamesAsync(
                            ["scope-1", "scope-2", Guid.NewGuid().ToString()],
-                           CancellationToken.None
-                       ))
+                           CancellationToken.None))
         {
             byExistingAndNonExistingNames.Add(scope);
         }
@@ -180,8 +166,7 @@ public sealed class ScopeStoreTest : IntegrationTestsBase
     {
         return new OpenIdDictRavenDbScopeStore(
             () => _documentStore.OpenAsyncSession(),
-            new Mock<ILogger<OpenIdDictRavenDbScopeStore>>().Object
-        );
+            new Mock<ILogger<OpenIdDictRavenDbScopeStore>>().Object);
     }
 
     private async Task<OpenIdDictRavenDbScope?> LoadScopeFromDatabase(string id)

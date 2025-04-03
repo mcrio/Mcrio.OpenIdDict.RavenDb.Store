@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Raven.Client.Documents;
 using Shouldly;
+using Xunit;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores.Tests.Integration;
 
@@ -39,8 +40,7 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
             session: _documentStore.OpenAsyncSession(),
             uniqueReservationType: UniqueReservationType.ApplicationClientId,
             expectedUniqueValue: application.ClientId!,
-            expectedReferenceDocumentId: application.Id
-        );
+            expectedReferenceDocumentId: application.Id);
 
         OpenIdDictRavenDbApplication? applicationFromDatabase = await LoadApplicationFromDatabase(application.Id);
         applicationFromDatabase.ShouldNotBeNull();
@@ -54,8 +54,7 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
     {
         await CreateApplicationInstanceAndStoreToDb(
             CreateApplicationStore(),
-            "test-client"
-        );
+            "test-client");
 
         await CreateWithExistingClientId().ShouldThrowAsync<DuplicateException>();
         return;
@@ -64,8 +63,7 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
         {
             await CreateApplicationInstanceAndStoreToDb(
                 CreateApplicationStore(),
-                "test-client"
-            );
+                "test-client");
         }
     }
 
@@ -74,14 +72,12 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
     {
         string applicationId = (await CreateApplicationInstanceAndStoreToDb(
             CreateApplicationStore(),
-            "test-client"
-        )).Id!;
+            "test-client")).Id!;
 
         OpenIdDictRavenDbApplicationStore store = CreateApplicationStore();
         OpenIdDictRavenDbApplication? application = await store.FindByIdAsync(
             applicationId,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         application.ShouldNotBeNull();
         application.ClientId.ShouldBe("test-client");
 
@@ -96,14 +92,12 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
             session: _documentStore.OpenAsyncSession(),
             uniqueReservationType: UniqueReservationType.ApplicationClientId,
             expectedUniqueValue: "test-client-updated",
-            expectedReferenceDocumentId: applicationId
-        );
+            expectedReferenceDocumentId: applicationId);
 
         await AssertReservationDocumentDoesNotExistAsync(
             _documentStore.OpenAsyncSession(),
             UniqueReservationType.ApplicationClientId,
-            "test-client"
-        );
+            "test-client");
     }
 
     [Fact]
@@ -111,14 +105,12 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
     {
         string applicationId = (await CreateApplicationInstanceAndStoreToDb(
             CreateApplicationStore(),
-            "test-client"
-        )).Id!;
+            "test-client")).Id!;
 
         OpenIdDictRavenDbApplicationStore store = CreateApplicationStore();
         OpenIdDictRavenDbApplication? application = await store.FindByIdAsync(
             applicationId,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         application.ShouldNotBeNull();
         application.ClientId.ShouldBe("test-client");
 
@@ -127,8 +119,7 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
         await AssertReservationDocumentDoesNotExistAsync(
             _documentStore.OpenAsyncSession(),
             UniqueReservationType.ApplicationClientId,
-            "test-client"
-        );
+            "test-client");
     }
 
     [Fact]
@@ -138,8 +129,7 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
             CreateApplicationStore(),
             clientId: "test-client",
             redirectUris: ["https://localhost/signin-oidc", "https://localhost/signin-oidc/callback"],
-            postLogoutRedirectUris: ["https://localhost/signout-oidc",]
-        )).Id!;
+            postLogoutRedirectUris: ["https://localhost/signout-oidc",])).Id!;
 
         OpenIdDictRavenDbApplicationStore store = CreateApplicationStore();
         OpenIdDictRavenDbApplication? byId = await store.FindByIdAsync(applicationId, CancellationToken.None);
@@ -160,15 +150,13 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
             CreateApplicationStore(),
             clientId: "test-client-2",
             redirectUris: ["https://localhost/signin-oidc", "https://localhost/signin-oidc/callback"],
-            postLogoutRedirectUris: ["https://localhost/signout-oidc",]
-        )).Id!;
+            postLogoutRedirectUris: ["https://localhost/signout-oidc",])).Id!;
 
         string application3Id = (await CreateApplicationInstanceAndStoreToDb(
             CreateApplicationStore(),
             clientId: "test-client-3",
             redirectUris: ["https://localhost"],
-            postLogoutRedirectUris: ["https://localhost",]
-        )).Id!;
+            postLogoutRedirectUris: ["https://localhost",])).Id!;
 
         WaitForIndexing(_documentStore);
 
@@ -216,8 +204,7 @@ public sealed class ApplicationStoreTest : IntegrationTestsBase
     {
         return new OpenIdDictRavenDbApplicationStore(
             () => _documentStore.OpenAsyncSession(),
-            new Mock<ILogger<OpenIdDictRavenDbApplicationStore>>().Object
-        );
+            new Mock<ILogger<OpenIdDictRavenDbApplicationStore>>().Object);
     }
 
     private async Task<OpenIdDictRavenDbApplication?> LoadApplicationFromDatabase(string id)

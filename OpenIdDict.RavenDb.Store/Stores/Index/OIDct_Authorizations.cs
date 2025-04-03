@@ -27,9 +27,10 @@ public abstract class OIDct_Authorizations<TAuthorization, TToken>
     {
         AddMap<TAuthorization>(
             authorizations => from auth in authorizations
+                let authId = auth.Id ?? string.Empty
                 select new IndexEntry
                 {
-                    AuthorizationId = auth.Id,
+                    AuthorizationId = authId,
                     CreationDate = auth.CreationDate,
                     Status = auth.Status,
                     Type = auth.Type,
@@ -40,9 +41,10 @@ public abstract class OIDct_Authorizations<TAuthorization, TToken>
         // This map is needed so we can compute the `HasTokens` property
         AddMap<TToken>(
             tokens => from token in tokens
+                let authId = token.AuthorizationId ?? string.Empty
                 select new IndexEntry
                 {
-                    AuthorizationId = token.AuthorizationId,
+                    AuthorizationId = authId,
                     CreationDate = null,
                     Status = null,
                     Type = null,
@@ -53,6 +55,7 @@ public abstract class OIDct_Authorizations<TAuthorization, TToken>
         Reduce = results => from result in results
             group result by result.AuthorizationId
             into g
+            where g.Key != null // check if authorization id is present
             where g.Any(
                 item => item.CreationDate != null
             ) // check if authorization document is present in the database
