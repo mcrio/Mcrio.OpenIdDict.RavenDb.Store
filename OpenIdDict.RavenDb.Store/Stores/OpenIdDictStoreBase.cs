@@ -35,7 +35,7 @@ public abstract class OpenIdDictStoreBase
     /// If cluster-wide transaction throw na exception as it is not supported for current operation.
     /// </summary>
     /// <exception cref="InvalidOperationException">When cluster-wide transaction.</exception>
-    /// <remarks><see cref="OpenIdDictRavenDbTokenStore{TToken,TUniqueReservation,TTokenIndex}.CreateAsync"/> inline comment for more details.</remarks>
+    /// <remarks><see cref="OpenIdDictRavenDbTokenStore{TToken,TTokenIndex}.CreateAsync"/> inline comment for more details.</remarks>
     protected void ThrowWhenClusterWideAsNotSupported()
     {
         if (IsClusterWideTransaction())

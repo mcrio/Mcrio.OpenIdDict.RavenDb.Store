@@ -26,57 +26,27 @@ using ConcurrencyException = Raven.Client.Exceptions.ConcurrencyException;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores;
 
-/// <inheritdoc />
-public class OpenIdDictRavenDbTokenStore
-    : OpenIdDictRavenDbTokenStore<OpenIdDictRavenDbToken, UniqueReservation, OIDct_Tokens>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="OpenIdDictRavenDbTokenStore"/> class.
-    /// </summary>
-    /// <param name="sessionProvider"></param>
-    /// <param name="logger"></param>
-    public OpenIdDictRavenDbTokenStore(
-        OpenIdDictDocumentSessionProvider sessionProvider,
-        ILogger<OpenIdDictRavenDbTokenStore> logger)
-        : base(sessionProvider, logger)
-    {
-    }
-
-    /// <inheritdoc />
-    protected override UniqueReservationDocumentUtility<UniqueReservation> CreateUniqueReservationDocumentsUtility(
-        UniqueReservationType reservationType,
-        string uniqueValue)
-    {
-        return new UniqueReservationDocumentUtility(
-            Session,
-            reservationType,
-            uniqueValue);
-    }
-}
-
 /// <summary>
 /// OpenIdDict token store.
 /// </summary>
 /// <typeparam name="TToken">Token document type.</typeparam>
-/// <typeparam name="TUniqueReservation">Unique reservation document type.</typeparam>
 /// <typeparam name="TTokenIndex">Token index type.</typeparam>
-public abstract class OpenIdDictRavenDbTokenStore<TToken, TUniqueReservation, TTokenIndex>
+public abstract class OpenIdDictRavenDbTokenStore<TToken, TTokenIndex>
     : OpenIdDictStoreBase, IOpenIddictTokenStore<TToken>
     where TToken : OpenIdDictRavenDbToken
-    where TUniqueReservation : UniqueReservation
     where TTokenIndex : OIDct_Tokens<TToken>, new()
 {
     private readonly TimeSpan _operationWaitForResultTimeout = TimeSpan.FromSeconds(30);
-    private readonly ILogger<OpenIdDictRavenDbTokenStore<TToken, TUniqueReservation, TTokenIndex>> _logger;
+    private readonly ILogger<OpenIdDictRavenDbTokenStore<TToken, TTokenIndex>> _logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="OpenIdDictRavenDbTokenStore{TToken, TUniqueReservation, TTokenIndex}"/> class.
+    /// Initializes a new instance of the <see cref="OpenIdDictRavenDbTokenStore{TToken, TTokenIndex}"/> class.
     /// </summary>
     /// <param name="sessionProvider"></param>
     /// <param name="logger"></param>
     protected OpenIdDictRavenDbTokenStore(
         OpenIdDictDocumentSessionProvider sessionProvider,
-        ILogger<OpenIdDictRavenDbTokenStore<TToken, TUniqueReservation, TTokenIndex>> logger)
+        ILogger<OpenIdDictRavenDbTokenStore<TToken, TTokenIndex>> logger)
         : base(sessionProvider.Invoke())
     {
         _logger = logger;
@@ -843,17 +813,6 @@ public abstract class OpenIdDictRavenDbTokenStore<TToken, TUniqueReservation, TT
         }
     }
 
-    /// <summary>
-    /// Create an instance of <see cref="UniqueReservationDocumentUtility"/>.
-    /// </summary>
-    /// <param name="reservationType"></param>
-    /// <param name="uniqueValue"></param>
-    /// <returns>Instance of <see cref="UniqueReservationDocumentUtility"/>.</returns>
-    protected abstract UniqueReservationDocumentUtility<TUniqueReservation> CreateUniqueReservationDocumentsUtility(
-        UniqueReservationType reservationType,
-        string uniqueValue
-    );
-
     private async ValueTask<long> MarkAsRevokedAsync(
         string collectionAlias,
         Parameters parameters,
@@ -906,5 +865,22 @@ public abstract class OpenIdDictRavenDbTokenStore<TToken, TUniqueReservation, TT
         }
 
         return 0;
+    }
+}
+
+/// <inheritdoc />
+internal class OpenIdDictRavenDbTokenStore
+    : OpenIdDictRavenDbTokenStore<OpenIdDictRavenDbToken, OIDct_Tokens>
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenIdDictRavenDbTokenStore"/> class.
+    /// </summary>
+    /// <param name="sessionProvider"></param>
+    /// <param name="logger"></param>
+    public OpenIdDictRavenDbTokenStore(
+        OpenIdDictDocumentSessionProvider sessionProvider,
+        ILogger<OpenIdDictRavenDbTokenStore> logger)
+        : base(sessionProvider, logger)
+    {
     }
 }

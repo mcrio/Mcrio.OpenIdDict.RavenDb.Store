@@ -5,10 +5,6 @@ using Raven.Client.Documents.Indexes;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores.Index;
 
-/// <inheritdoc />
-/// ReSharper disable once InconsistentNaming
-public class OIDct_Tokens : OIDct_Tokens<OpenIdDictRavenDbToken>;
-
 /// <summary>
 /// OpenIdDict static index required for token pruning operation.
 /// </summary>
@@ -62,3 +58,7 @@ public abstract class OIDct_Tokens<TToken> : AbstractIndexCreationTask<TToken, O
         public virtual DateTimeOffset? ExpirationDate { get; set; }
     }
 }
+
+/// <inheritdoc />
+/// ReSharper disable once InconsistentNaming
+internal class OIDct_Tokens : OIDct_Tokens<OpenIdDictRavenDbToken>;

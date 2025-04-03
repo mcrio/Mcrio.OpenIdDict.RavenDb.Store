@@ -25,8 +25,8 @@ using MemberAccessException = System.MemberAccessException;
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores;
 
 /// <inheritdoc />
-public class OpenIdDictRavenDbApplicationStore : OpenIdDictRavenDbApplicationStore<OpenIdDictRavenDbApplication,
-    UniqueReservation>
+public class OpenIdDictRavenDbApplicationStore
+    : OpenIdDictRavenDbApplicationStore<OpenIdDictRavenDbApplication, UniqueReservation>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenIdDictRavenDbApplicationStore"/> class.

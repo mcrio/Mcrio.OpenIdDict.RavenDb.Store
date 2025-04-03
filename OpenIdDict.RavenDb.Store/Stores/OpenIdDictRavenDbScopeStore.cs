@@ -26,33 +26,6 @@ using Raven.Client.Documents.Session;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores;
 
-/// <inheritdoc />
-public class OpenIdDictRavenDbScopeStore : OpenIdDictRavenDbScopeStore<OpenIdDictRavenDbScope, UniqueReservation>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="OpenIdDictRavenDbScopeStore"/> class.
-    /// </summary>
-    /// <param name="sessionProvider"></param>
-    /// <param name="logger"></param>
-    public OpenIdDictRavenDbScopeStore(
-        OpenIdDictDocumentSessionProvider sessionProvider,
-        ILogger<OpenIdDictRavenDbScopeStore> logger)
-        : base(sessionProvider, logger)
-    {
-    }
-
-    /// <inheritdoc />
-    protected override UniqueReservationDocumentUtility<UniqueReservation> CreateUniqueReservationDocumentsUtility(
-        UniqueReservationType reservationType,
-        string uniqueValue)
-    {
-        return new UniqueReservationDocumentUtility(
-            Session,
-            reservationType,
-            uniqueValue);
-    }
-}
-
 /// <summary>
 /// OpenIdDict RavenDB scope store.
 /// </summary>
@@ -672,4 +645,31 @@ public abstract class OpenIdDictRavenDbScopeStore<TScope, TUniqueReservation>
     protected abstract UniqueReservationDocumentUtility<TUniqueReservation> CreateUniqueReservationDocumentsUtility(
         UniqueReservationType reservationType,
         string uniqueValue);
+}
+
+/// <inheritdoc />
+internal class OpenIdDictRavenDbScopeStore : OpenIdDictRavenDbScopeStore<OpenIdDictRavenDbScope, UniqueReservation>
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenIdDictRavenDbScopeStore"/> class.
+    /// </summary>
+    /// <param name="sessionProvider"></param>
+    /// <param name="logger"></param>
+    public OpenIdDictRavenDbScopeStore(
+        OpenIdDictDocumentSessionProvider sessionProvider,
+        ILogger<OpenIdDictRavenDbScopeStore> logger)
+        : base(sessionProvider, logger)
+    {
+    }
+
+    /// <inheritdoc />
+    protected override UniqueReservationDocumentUtility<UniqueReservation> CreateUniqueReservationDocumentsUtility(
+        UniqueReservationType reservationType,
+        string uniqueValue)
+    {
+        return new UniqueReservationDocumentUtility(
+            Session,
+            reservationType,
+            uniqueValue);
+    }
 }

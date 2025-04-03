@@ -5,10 +5,6 @@ using Raven.Client.Documents.Indexes;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores.Index;
 
-/// <inheritdoc />
-/// ReSharper disable once InconsistentNaming
-public class OIDct_Authorizations : OIDct_Authorizations<OpenIdDictRavenDbAuthorization, OpenIdDictRavenDbToken>;
-
 /// <summary>
 /// OpenIdDict Authorizations static index required for the prune job and deletion by query.
 /// </summary>
@@ -107,3 +103,7 @@ public abstract class OIDct_Authorizations<TAuthorization, TToken>
         public bool HasTokens { get; set; }
     }
 }
+
+/// <inheritdoc />
+/// ReSharper disable once InconsistentNaming
+internal class OIDct_Authorizations : OIDct_Authorizations<OpenIdDictRavenDbAuthorization, OpenIdDictRavenDbToken>;

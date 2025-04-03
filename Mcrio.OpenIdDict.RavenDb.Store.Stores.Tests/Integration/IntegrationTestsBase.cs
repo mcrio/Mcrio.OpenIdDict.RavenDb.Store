@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Mcrio.OpenIdDict.RavenDb.Store.Models;
 using Mcrio.OpenIdDict.RavenDb.Store.Stores.Index;
 using Mcrio.OpenIdDict.RavenDb.Store.Stores.Unique;
+using OpenIddict.Abstractions;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Session;
@@ -85,7 +86,7 @@ public abstract class IntegrationTestsBase : RavenTestDriver
     }
 
     protected static async Task<OpenIdDictRavenDbScope> CreateScopeInstanceAndStoreToDb(
-        OpenIdDictRavenDbScopeStore store,
+        IOpenIddictScopeStore<OpenIdDictRavenDbScope> store,
         string name)
     {
         OpenIdDictRavenDbScope scope = ModelFactory.CreateScopeInstance(

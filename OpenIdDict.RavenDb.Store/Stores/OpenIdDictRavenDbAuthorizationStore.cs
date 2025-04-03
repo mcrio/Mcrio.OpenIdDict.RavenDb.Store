@@ -22,23 +22,6 @@ using Raven.Client.Documents.Queries;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores;
 
-/// <inheritdoc />
-public class OpenIdDictRavenDbAuthorizationStore
-    : OpenIdDictRavenDbAuthorizationStore<OpenIdDictRavenDbAuthorization>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="OpenIdDictRavenDbAuthorizationStore"/> class.
-    /// </summary>
-    /// <param name="sessionProvider"></param>
-    /// <param name="logger"></param>
-    public OpenIdDictRavenDbAuthorizationStore(
-        OpenIdDictDocumentSessionProvider sessionProvider,
-        ILogger<OpenIdDictRavenDbAuthorizationStore> logger)
-        : base(sessionProvider, logger)
-    {
-    }
-}
-
 /// <summary>
 /// OpenIdDict RavenDb authorization store.
 /// </summary>
@@ -724,5 +707,22 @@ public abstract class OpenIdDictRavenDbAuthorizationStore<TAuthorization>
         }
 
         return 0;
+    }
+}
+
+/// <inheritdoc />
+internal class OpenIdDictRavenDbAuthorizationStore
+    : OpenIdDictRavenDbAuthorizationStore<OpenIdDictRavenDbAuthorization>
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenIdDictRavenDbAuthorizationStore"/> class.
+    /// </summary>
+    /// <param name="sessionProvider"></param>
+    /// <param name="logger"></param>
+    public OpenIdDictRavenDbAuthorizationStore(
+        OpenIdDictDocumentSessionProvider sessionProvider,
+        ILogger<OpenIdDictRavenDbAuthorizationStore> logger)
+        : base(sessionProvider, logger)
+    {
     }
 }
