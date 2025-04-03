@@ -9,6 +9,8 @@
         <IsTestProject>true</IsTestProject>
 
         <CodeAnalysisRuleSet>..\codestyle.tests.ruleset</CodeAnalysisRuleSet>
+
+        <RootNamespace>Mcrio.OpenIdDict.RavenDb.Store.Stores.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -32,7 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OpenIdDict.RavenDb.Store\OpenIdDict.RavenDb.Store.csproj" />
+      <ProjectReference Include="..\Mcrio.OpenIdDict.RavenDb.Store\Mcrio.OpenIdDict.RavenDb.Store.csproj" />
     </ItemGroup>
 
 </Project>
