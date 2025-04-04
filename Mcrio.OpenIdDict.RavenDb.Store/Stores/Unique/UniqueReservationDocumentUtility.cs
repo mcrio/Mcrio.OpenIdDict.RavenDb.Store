@@ -1,11 +1,19 @@
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using Mcrio.OpenIdDict.RavenDb.Store.Stores.Unique.Exceptions;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores.Unique;
+
+/// <summary>
+/// Delegate for Unicode normalization of the unique value.
+/// </summary>
+/// <param name="input">Input string.</param>
+/// <returns>Normalized value.</returns>
+public delegate string NormalizationCallback(string input);
 
 /// <inheritdoc />
 public class UniqueReservationDocumentUtility : UniqueReservationDocumentUtility<OpenIdDictUniqueReservation>
@@ -40,9 +48,13 @@ public class UniqueReservationDocumentUtility : UniqueReservationDocumentUtility
 public abstract class UniqueReservationDocumentUtility<TReservation>
     where TReservation : OpenIdDictUniqueReservation
 {
+    private readonly NormalizationCallback _defaultNormalizeCallback =
+        input => input.Normalize(NormalizationForm.FormKD).ToLowerInvariant();
+
     private readonly IAsyncDocumentSession _session;
     private readonly UniqueReservationType _reservationType;
     private readonly string _uniqueValue;
+    private readonly NormalizationCallback? _normalizationOverride;
 
     // ReSharper disable once RedundantDefaultMemberInitializer
     private bool _checkedIfUniqueExists = false;
@@ -60,6 +72,22 @@ public abstract class UniqueReservationDocumentUtility<TReservation>
         IAsyncDocumentSession session,
         UniqueReservationType reservationType,
         string uniqueValue)
+        : this(session, reservationType, uniqueValue, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UniqueReservationDocumentUtility{TReservation}"/> class.
+    /// </summary>
+    /// <param name="session">Document session.</param>
+    /// <param name="reservationType">Unique reservation prefix used as part of the reservation document id.</param>
+    /// <param name="uniqueValue">New unique value.</param>
+    /// <param name="normalizationOverride">When not NULL overrides the default Unicode normalization functionality.</param>
+    protected UniqueReservationDocumentUtility(
+        IAsyncDocumentSession session,
+        UniqueReservationType reservationType,
+        string uniqueValue,
+        NormalizationCallback? normalizationOverride)
     {
         if (string.IsNullOrWhiteSpace(uniqueValue))
         {
@@ -69,6 +97,7 @@ public abstract class UniqueReservationDocumentUtility<TReservation>
         _session = session;
         _reservationType = reservationType;
         _uniqueValue = uniqueValue;
+        _normalizationOverride = normalizationOverride;
     }
 
     /// <summary>
@@ -217,8 +246,19 @@ public abstract class UniqueReservationDocumentUtility<TReservation>
         );
         char separator = store.Conventions.IdentityPartsSeparator;
         string reservationTypePrefix = GetKeyPrefix(_reservationType);
+        string normalizedUniqueValue = _normalizationOverride is not null
+            ? _normalizationOverride(uniqueValue)
+            : _defaultNormalizeCallback(uniqueValue);
+
+        if (string.IsNullOrWhiteSpace(normalizedUniqueValue))
+        {
+            throw new ArgumentException(
+                $"Unexpected empty value for {nameof(normalizedUniqueValue)} in {nameof(GetReservationDocumentId)} after unicode normalization of {uniqueValue}"
+            );
+        }
+
         return
-            $"{reservationsCollectionPrefix}{separator}{reservationTypePrefix}{separator}{uniqueValue}";
+            $"{reservationsCollectionPrefix}{separator}{reservationTypePrefix}{separator}{normalizedUniqueValue}";
     }
 
     /// <summary>
