@@ -2,8 +2,17 @@ using System;
 using Mcrio.OpenIdDict.RavenDb.Store.Models;
 using Mcrio.OpenIdDict.RavenDb.Store.Stores;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Raven.Client.Documents.Session;
 
 namespace Mcrio.OpenIdDict.RavenDb.Store;
+
+/// <summary>
+/// Locates the RavenDb document session.
+/// </summary>
+/// <param name="provider">Service provider.</param>
+/// <returns>Instance of an RavenDB async document session.</returns>
+public delegate IAsyncDocumentSession DocumentSessionServiceLocator(IServiceProvider provider);
 
 /// <summary>
 /// Exposes extensions allowing to register the OpenIdDict RavenDB services.
@@ -17,12 +26,20 @@ public static class OpenIdDictRavenDbExtension
     /// <param name="builder">
     /// The OpenIdDict core builder that is being configured.
     /// </param>
+    /// <param name="documentSessionServiceLocator">RavenDB document session service locator.</param>
     /// <returns>
     /// An instance of <see cref="OpenIdDictRavenDbBuilder"/> to allow chaining additional configuration.
     /// </returns>
-    public static OpenIdDictRavenDbBuilder UseRavenDb(this OpenIddictCoreBuilder builder)
+    public static OpenIdDictRavenDbBuilder UseRavenDb(
+        this OpenIddictCoreBuilder builder,
+        DocumentSessionServiceLocator documentSessionServiceLocator)
     {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(documentSessionServiceLocator);
+
+        builder.Services.TryAddScoped<OpenIdDictDocumentSessionProvider>(
+            provider => () => documentSessionServiceLocator(provider)
+        );
 
         // Since RavenDB does case-insensitive comparisons by default, ensure the additional internal
         // filtering logic is enforced to check for casing
@@ -50,6 +67,7 @@ public static class OpenIdDictRavenDbExtension
     /// <param name="builder">
     /// The OpenIdDict core builder that is being configured.
     /// </param>
+    /// <param name="documentSessionServiceLocator">RavenDb document session service locator.</param>
     /// <param name="configuration">
     /// A delegate that allows additional configuration of the OpenIdDictRavenDbBuilder.
     /// </param>
@@ -58,12 +76,13 @@ public static class OpenIdDictRavenDbExtension
     /// </returns>
     public static OpenIddictCoreBuilder UseRavenDb(
         this OpenIddictCoreBuilder builder,
+        DocumentSessionServiceLocator documentSessionServiceLocator,
         Action<OpenIdDictRavenDbBuilder> configuration)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(configuration);
 
-        configuration(builder.UseRavenDb());
+        configuration(builder.UseRavenDb(documentSessionServiceLocator));
 
         return builder;
     }
