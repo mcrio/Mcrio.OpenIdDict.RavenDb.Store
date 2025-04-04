@@ -64,7 +64,7 @@ public static class OpenIdDictRavenDbConventions
         new (typeof(OpenIdDictRavenDbScope), "OIDDctScopes", "oidctscope"),
         new (typeof(OpenIdDictRavenDbAuthorization), "OIDDctAuthorizations", "oiddctauth"),
         new (typeof(OpenIdDictRavenDbToken), "OIDDctTokens", "oiddcttoken"),
-        new (typeof(UniqueReservation), "OIDDctUniques", "oiddctunique"),
+        new (typeof(OpenIdDictUniqueReservation), "OIDDctUniques", "oiddctunique"),
     ];
 
     /// <summary>

@@ -40,7 +40,7 @@ public sealed class OpenIdDictRavenDbBuilder
         TUniqueReservation>()
         where TApplication : OpenIdDictRavenDbApplication
         where TApplicationStore : OpenIdDictRavenDbApplicationStore<TApplication, TUniqueReservation>
-        where TUniqueReservation : UniqueReservation
+        where TUniqueReservation : OpenIdDictUniqueReservation
     {
         _services.Replace(
             ServiceDescriptor.Scoped<IOpenIddictApplicationManager>(
@@ -65,9 +65,9 @@ public sealed class OpenIdDictRavenDbBuilder
     public OpenIdDictRavenDbBuilder ReplaceDefaultApplicationEntity<
         TApplication, TApplicationStore>()
         where TApplication : OpenIdDictRavenDbApplication
-        where TApplicationStore : OpenIdDictRavenDbApplicationStore<TApplication, UniqueReservation>
+        where TApplicationStore : OpenIdDictRavenDbApplicationStore<TApplication, OpenIdDictUniqueReservation>
     {
-        return ReplaceDefaultApplicationEntity<TApplication, TApplicationStore, UniqueReservation>();
+        return ReplaceDefaultApplicationEntity<TApplication, TApplicationStore, OpenIdDictUniqueReservation>();
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public sealed class OpenIdDictRavenDbBuilder
         TUniqueReservation>()
         where TScope : OpenIdDictRavenDbScope
         where TScopeStore : OpenIdDictRavenDbScopeStore<TScope, TUniqueReservation>
-        where TUniqueReservation : UniqueReservation
+        where TUniqueReservation : OpenIdDictUniqueReservation
     {
         _services.Replace(
             ServiceDescriptor.Scoped<IOpenIddictScopeManager>(
@@ -133,9 +133,9 @@ public sealed class OpenIdDictRavenDbBuilder
     /// <typeparam name="TScopeStore">Scope store type.</typeparam>
     public OpenIdDictRavenDbBuilder ReplaceDefaultScopeEntity<TScope, TScopeStore>()
         where TScope : OpenIdDictRavenDbScope
-        where TScopeStore : OpenIdDictRavenDbScopeStore<TScope, UniqueReservation>
+        where TScopeStore : OpenIdDictRavenDbScopeStore<TScope, OpenIdDictUniqueReservation>
     {
-        return ReplaceDefaultScopeEntity<TScope, TScopeStore, UniqueReservation>();
+        return ReplaceDefaultScopeEntity<TScope, TScopeStore, OpenIdDictUniqueReservation>();
     }
 
     /// <summary>

@@ -8,7 +8,7 @@ using Raven.Client.Documents.Session;
 namespace Mcrio.OpenIdDict.RavenDb.Store.Stores.Unique;
 
 /// <inheritdoc />
-public class UniqueReservationDocumentUtility : UniqueReservationDocumentUtility<UniqueReservation>
+public class UniqueReservationDocumentUtility : UniqueReservationDocumentUtility<OpenIdDictUniqueReservation>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="UniqueReservationDocumentUtility"/> class.
@@ -25,9 +25,9 @@ public class UniqueReservationDocumentUtility : UniqueReservationDocumentUtility
     }
 
     /// <inheritdoc />
-    protected override UniqueReservation CreateReservationDocument(string documentId, string ownerDocumentId)
+    protected override OpenIdDictUniqueReservation CreateReservationDocument(string documentId, string ownerDocumentId)
     {
-        return new UniqueReservation(documentId, ownerDocumentId);
+        return new OpenIdDictUniqueReservation(documentId, ownerDocumentId);
     }
 }
 
@@ -38,7 +38,7 @@ public class UniqueReservationDocumentUtility : UniqueReservationDocumentUtility
 /// </summary>
 /// <typeparam name="TReservation">Unique reservation document type.</typeparam>
 public abstract class UniqueReservationDocumentUtility<TReservation>
-    where TReservation : UniqueReservation
+    where TReservation : OpenIdDictUniqueReservation
 {
     private readonly IAsyncDocumentSession _session;
     private readonly UniqueReservationType _reservationType;
@@ -171,8 +171,8 @@ public abstract class UniqueReservationDocumentUtility<TReservation>
         {
             // Get old reservation and mark it for deletion
             string oldReservationDocumentId = GetReservationDocumentId(oldUniqueValue);
-            UniqueReservation? oldReservation = await _session
-                .LoadAsync<UniqueReservation>(oldReservationDocumentId)
+            OpenIdDictUniqueReservation? oldReservation = await _session
+                .LoadAsync<OpenIdDictUniqueReservation>(oldReservationDocumentId)
                 .ConfigureAwait(false);
 
             if (oldReservation != null)

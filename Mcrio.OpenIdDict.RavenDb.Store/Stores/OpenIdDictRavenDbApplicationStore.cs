@@ -26,7 +26,7 @@ namespace Mcrio.OpenIdDict.RavenDb.Store.Stores;
 
 /// <inheritdoc />
 public class OpenIdDictRavenDbApplicationStore
-    : OpenIdDictRavenDbApplicationStore<OpenIdDictRavenDbApplication, UniqueReservation>
+    : OpenIdDictRavenDbApplicationStore<OpenIdDictRavenDbApplication, OpenIdDictUniqueReservation>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="OpenIdDictRavenDbApplicationStore"/> class.
@@ -41,7 +41,7 @@ public class OpenIdDictRavenDbApplicationStore
     }
 
     /// <inheritdoc />
-    protected override UniqueReservationDocumentUtility<UniqueReservation> CreateUniqueReservationDocumentsUtility(
+    protected override UniqueReservationDocumentUtility<OpenIdDictUniqueReservation> CreateUniqueReservationDocumentsUtility(
         UniqueReservationType reservationType,
         string uniqueValue)
     {
@@ -60,7 +60,7 @@ public class OpenIdDictRavenDbApplicationStore
 public abstract class OpenIdDictRavenDbApplicationStore<TApplication, TUniqueReservation>
     : OpenIdDictStoreBase, IOpenIddictApplicationStore<TApplication>
     where TApplication : OpenIdDictRavenDbApplication
-    where TUniqueReservation : UniqueReservation
+    where TUniqueReservation : OpenIdDictUniqueReservation
 {
     private readonly ILogger<OpenIdDictRavenDbApplicationStore<TApplication, TUniqueReservation>> _logger;
 

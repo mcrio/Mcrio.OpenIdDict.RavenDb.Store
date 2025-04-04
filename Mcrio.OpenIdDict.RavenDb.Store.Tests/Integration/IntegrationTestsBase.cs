@@ -44,7 +44,7 @@ public abstract class IntegrationTestsBase : RavenTestDriver
         bool exists = await uniqueUtility.CheckIfUniqueIsTakenAsync();
         exists.ShouldBeTrue(because);
 
-        UniqueReservation? reservation = await uniqueUtility.LoadReservationAsync();
+        OpenIdDictUniqueReservation? reservation = await uniqueUtility.LoadReservationAsync();
         reservation.ShouldNotBeNull();
         reservation.ReferenceId.ShouldBe(expectedReferenceDocumentId);
     }
